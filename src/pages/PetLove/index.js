@@ -35,8 +35,8 @@ export default function PetLove ({route}) {
         navigation.navigate('Deletar', {itemId, username, toggle});
     }
 
-    const modificarPedido = (itemId, itemNomePet,itemHorario, itemTelefone) =>{
-        navigation.navigate('ModificarPedido', {username, itemId, itemNomePet, itemHorario, itemTelefone, toggle});
+    const modificarPedido = (itemId, itemNomePet,itemDataInteira, itemTelefone) =>{
+        navigation.navigate('ModificarPedido', {username, itemId, itemNomePet, itemDataInteira, itemTelefone, toggle});
     }
 
 
@@ -57,16 +57,16 @@ export default function PetLove ({route}) {
                     renderItem={({ item }) => (
                         <>
                             <Animatable.View animation={'bounceIn'} delay={600} style={styles.passeioText}>
-                                <Text>{item.id}</Text>
-                                <Text>{item.nomePet}</Text>
-                                <Text>{item.horarioPasseio}</Text>
-                                <Text>{item.telefone}</Text>
+                                <Text>Nome: {item.nomePet}</Text>
+                                <Text>Data: {item.data}</Text>
+                                <Text>Horário: {item.horarioPasseio} hrs</Text>
+                                <Text>Contato: {item.telefone}</Text>
                             </Animatable.View>
                             <View style={{display: 'flex',flexDirection: 'row-reverse', justifyContent:'space-between'}}>
                             <TouchableOpacity onPress={()=> deletar(item.id)}>
                                 <Text style={{color:'red'}}>Deletar</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() =>modificarPedido(item.id, item.nomePet, item.horarioPasseio, item.telefone)}>
+                            <TouchableOpacity onPress={() =>modificarPedido(item.id, item.nomePet,item.dataInteira, item.telefone)}>
                                 <Text style={{color:'green'}}>Modificar</Text>
                             </TouchableOpacity>
                             </View>

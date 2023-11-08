@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
-export default function CadastrarPedido({route}) {
+export default function ModificarPedido({route}) {
     const [nomePet, setNomePet] = useState('')
     const [horarioPasseio, setHorarioPasseio] = useState('');
     const [telefone,setTelefone] = useState('');

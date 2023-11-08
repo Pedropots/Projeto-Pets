@@ -7,12 +7,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function ModificarPedido({route}) {
-    const {username,itemId, itemNomePet,itemHorario, itemTelefone} = route.params;
+    const {username,itemId, itemNomePet,itemHorario, itemTelefone, toggle} = route.params;
     const [nomePet, setNomePet] = useState(itemNomePet)
     const [horarioPasseio, setHorarioPasseio] = useState(itemHorario);
     const [telefone,setTelefone] = useState(itemTelefone);
     const [id, setId] = useState(itemId);
-        const navigation = useNavigation();
+    const navigation = useNavigation();
+    const untoggle = !toggle;
 
     const cadastrar = async () =>{
         if(!nomePet || !telefone || !horarioPasseio){
@@ -40,7 +41,7 @@ export default function ModificarPedido({route}) {
                 console.log(jsonValue);
                 if(response !== null) {
                     Alert.alert('Modificação efetuado com sucesso!');
-                    navigation.navigate('PetLove', {username, id});
+                    navigation.navigate('PetLove', {username, untoggle});
                 };
                 
                 

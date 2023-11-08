@@ -8,26 +8,28 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function PetLove ({route}) {
 
     const navigation = useNavigation();
-    const {username} = route.params;
+    const {username, id} = route.params;
     const[info, setInfo] = useState([]); 
 
      
     useEffect(()=>{
         const getData = async (username) =>{
-            const jsonValue = await AsyncStorage.getItem('passeios' + username);
-            const data = JSON.parse(jsonValue);
-            setInfo(info => [...info,{
-                id: data.id,
-                nomePet:data.nomePet,
-                horarioPasseio: data.horarioPasseio,
-                telefone: data.telefone
-                
-            }]
-            )
+           try {
+                let data = await AsyncStorage.getItem('passeios' + username);
+                if(data === undefined || data === null){
+                    data = '[]';
+                }
+                if(data.length > 0 || data[0] !== '['){
+                    data = `${data}`;
+                }
+                setInfo(JSON.parse(data));
+                return info;
+           } catch (error) {
+                console.log('Erro ao fazer download dos passeios');
+           }
         }
         getData(username);
-    },[])
-
+    },[id])
     const deletar = (id)=>{
 
     }

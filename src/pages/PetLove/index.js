@@ -8,9 +8,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function PetLove ({route}) {
 
     const navigation = useNavigation();
-    const {username, id} = route.params;
+    const {username} = route.params;
+    let {toggle, untoggle} = route.params;
     const[info, setInfo] = useState(null); 
-
+    toggle = untoggle;
      
     useEffect(()=>{
         const getData = async (username) =>{
@@ -28,13 +29,14 @@ export default function PetLove ({route}) {
            }
         }
         getData(username);
-    },[id])
-    const deletar = (id)=>{
+    },[untoggle])
 
+    const deletar = async (itemId)=>{
+        navigation.navigate('Deletar', {itemId, username, toggle});
     }
 
     const modificarPedido = (itemId, itemNomePet,itemHorario, itemTelefone) =>{
-        navigation.navigate('ModificarPedido', {username, itemId, itemNomePet, itemHorario, itemTelefone});
+        navigation.navigate('ModificarPedido', {username, itemId, itemNomePet, itemHorario, itemTelefone, toggle});
     }
 
 
@@ -45,7 +47,7 @@ export default function PetLove ({route}) {
             </Animatable.View>
 
             <Animatable.View style={styles.containerPasseios} animation={'fadeInUp'}>
-                <TouchableOpacity style={styles.button} onPress={()=> navigation.navigate('CadastrarPedido', {username})}>
+                <TouchableOpacity style={styles.button} onPress={()=> navigation.navigate('CadastrarPedido', {username, toggle})}>
                     <Text style={styles.buttonText}>Adicionar Pedido</Text>
                 </TouchableOpacity>
                 <FlatList
@@ -55,6 +57,7 @@ export default function PetLove ({route}) {
                     renderItem={({ item }) => (
                         <>
                             <Animatable.View animation={'bounceIn'} delay={600} style={styles.passeioText}>
+                                <Text>{item.id}</Text>
                                 <Text>{item.nomePet}</Text>
                                 <Text>{item.horarioPasseio}</Text>
                                 <Text>{item.telefone}</Text>

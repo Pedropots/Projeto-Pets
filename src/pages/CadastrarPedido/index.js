@@ -1,15 +1,39 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, Button } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import nextId from "react-id-generator";
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 
 
 
 export default function CadastrarPedido({route}) {
+    
+    const [date, setDate] = useState(new Date());
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
+    
+    const onChange = (event, selectedDate) => {
+      const currentDate = selectedDate;
+      setShow(false);
+      setDate(currentDate);
+    };
+    
+    const showMode = (currentMode) => {
+      setShow(true);
+      setMode(currentMode);
+    };
+    
+    const showDatepicker = () => {
+      showMode('date');
+    };
+    
+    const showTimepicker = () => {
+      showMode('time');
+    };      
     const [nomePet, setNomePet] = useState('')
-    const [horarioPasseio, setHorarioPasseio] = useState('');
     const [telefone,setTelefone] = useState('');
     const {username, toggle} = route.params;
    
@@ -17,30 +41,44 @@ export default function CadastrarPedido({route}) {
     const navigation = useNavigation();
 
     const cadastrar = async () =>{
-        if(!nomePet || !telefone || !horarioPasseio){
+        if(!nomePet || !telefone){
             Alert.alert('Preencher campos', 'Existem campos que não foram preenchidos');
         }
         else{
+
+            let dateTime = date.toLocaleString();
+                let dateTimeConverted = dateTime.split(' ')
+                let dia = dateTimeConverted[0];
+                let time = dateTimeConverted[1];
+                let timeSplited = time.split(':');
+                let hour = timeSplited[0];
+                let minutes = timeSplited[1];
             try {
                 let id = nextId();
                 stringId = id.toString();
                 console.log(stringId);
-
                 const data  = {
                 id: stringId,
+                dataInteira: date,
                 nomePet: nomePet,
-                horarioPasseio: horarioPasseio,
+                data: dia,
+                horarioPasseio: hour + ':' + minutes,
                 telefone: telefone,
                 };
-
-                const jsonArray = await AsyncStorage.getItem('passeios' + username);
-                const convertedArray = JSON.parse(jsonArray);
                 let array = [];
-                for(let i = 0; i < convertedArray.length; i++){
-                    array.push(convertedArray[i]);
-                }
-                array.push(data);
                 
+                const jsonArray = await AsyncStorage.getItem('passeios' + username);
+                if (jsonArray === null || jsonArray === undefined || jsonArray) {
+                    array.push(data);
+                }else{
+
+                    const convertedArray = JSON.parse(jsonArray);
+                    let array = [];
+                    for(let i = 0; i < convertedArray.length; i++){
+                        array.push(convertedArray[i]);
+                    }
+                    array.push(data);
+                }
                 const jsonValue = JSON.stringify(array);
                 const response = await AsyncStorage.setItem('passeios' + username, jsonValue);
                 console.log(jsonValue);
@@ -48,8 +86,6 @@ export default function CadastrarPedido({route}) {
                     Alert.alert('Cadastro efetuado com sucesso!');
                     navigation.navigate('PetLove', {username, untoggle});
                 };
-                
-                
             } catch (error) {
                 console.error(error);
             }
@@ -58,26 +94,33 @@ export default function CadastrarPedido({route}) {
     return(
         <View style={styles.container}>
             <Animatable.View animation={"fadeInLeft"} delay={500} style={styles.containerHeader}>
-                <Text style={styles.message}> Modificar Pedido</Text>
+                <Text style={styles.message}> Cadastrar Pedido</Text>
             </Animatable.View>
-
             <Animatable.View animation={'fadeInUp'} style={styles.containerForm}>
                 <ScrollView style={{marginTop: 15}} showsVerticalScrollIndicator={false}>
-
                     <Text style={styles.title}>Nome do Pet</Text>
                     <TextInput placeholder='Username' style={styles.input}  value={nomePet} onChangeText={setNomePet}></TextInput>
-
-                    <Text style={styles.title}>Horário do Passeio</Text>
-                    <TextInput placeholder='Horario do passeio' style={styles.input} onChangeText={setHorarioPasseio}></TextInput>
-
                     <Text style={styles.title}>Telefone</Text>
-                    <TextInput placeholder='Telefone' style={styles.input} onChangeText={setTelefone}></TextInput>
-
+                    <TextInput placeholder='Telefone' inputMode='tel' style={styles.input} onChangeText={setTelefone}></TextInput>
+                    <TouchableOpacity style={styles.button} onPress={showDatepicker}>
+                        <Text style={styles.buttonText}>Escolha a data</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={showTimepicker}>
+                        <Text style={styles.buttonText}>Escolha um horário</Text>
+                    </TouchableOpacity>
+                    {show && (
+                        <DateTimePicker
+                        testID="dateTimePicker"
+                        value={date}
+                        mode={mode}
+                        is24Hour={true}
+                        onChange={onChange}
+                        />
+                        )}
                     <TouchableOpacity style={styles.button} onPress={() =>{cadastrar()}}>
                         <Text style={styles.buttonText}>Cadastrar Pedido</Text>
                     </TouchableOpacity>
                 </ScrollView>
-
             </Animatable.View>
         </View>
     );
@@ -136,3 +179,4 @@ const styles = StyleSheet.create({
     }
 
 })
+

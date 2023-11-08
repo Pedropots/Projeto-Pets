@@ -7,11 +7,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function ModificarPedido({route}) {
-    const [nomePet, setNomePet] = useState('')
-    const [horarioPasseio, setHorarioPasseio] = useState('');
-    const [telefone,setTelefone] = useState('');
-    const [id, setId] = useState(0);
-    const {username, itemId} = route.params;
+    const {username,itemId, itemNomePet,itemHorario, itemTelefone} = route.params;
+    const [nomePet, setNomePet] = useState(itemNomePet)
+    const [horarioPasseio, setHorarioPasseio] = useState(itemHorario);
+    const [telefone,setTelefone] = useState(itemTelefone);
+    const [id, setId] = useState(itemId);
         const navigation = useNavigation();
 
     const cadastrar = async () =>{
@@ -39,7 +39,7 @@ export default function ModificarPedido({route}) {
                 const response = await AsyncStorage.setItem('passeios' + username, jsonValue);
                 console.log(jsonValue);
                 if(response !== null) {
-                    Alert.alert('Cadastro efetuado com sucesso!');
+                    Alert.alert('Modificação efetuado com sucesso!');
                     navigation.navigate('PetLove', {username, id});
                 };
                 
@@ -52,23 +52,23 @@ export default function ModificarPedido({route}) {
     return(
         <View style={styles.container}>
             <Animatable.View animation={"fadeInLeft"} delay={500} style={styles.containerHeader}>
-                <Text style={styles.message}>Pedido</Text>
+                <Text style={styles.message}>Modificar Pedido</Text>
             </Animatable.View>
 
             <Animatable.View animation={'fadeInUp'} style={styles.containerForm}>
                 <ScrollView style={{marginTop: 15}} showsVerticalScrollIndicator={false}>
 
                     <Text style={styles.title}>Nome do Pet</Text>
-                    <TextInput placeholder='Username' style={styles.input}  value={nomePet} onChangeText={setNomePet}></TextInput>
+                    <TextInput placeholder={itemNomePet} style={styles.input}  value={nomePet} onChangeText={setNomePet}></TextInput>
 
                     <Text style={styles.title}>Horário do Passeio</Text>
-                    <TextInput placeholder='Horario do passeio' style={styles.input} onChangeText={setHorarioPasseio}></TextInput>
+                    <TextInput placeholder={itemHorario} style={styles.input} onChangeText={setHorarioPasseio}></TextInput>
 
                     <Text style={styles.title}>Telefone</Text>
-                    <TextInput placeholder='Telefone' style={styles.input} onChangeText={setTelefone}></TextInput>
+                    <TextInput placeholder={itemTelefone} style={styles.input} onChangeText={setTelefone}></TextInput>
 
                     <Text style={styles.title}>Id</Text>
-                    <TextInput placeholder='Telefone' style={styles.input} onChangeText={setId}></TextInput>
+                    <TextInput placeholder={itemId} style={styles.input} onChangeText={setId}></TextInput>
 
                     <TouchableOpacity style={styles.button} onPress={() =>{cadastrar()}}>
                         <Text style={styles.buttonText}>Modificar Pedido</Text>

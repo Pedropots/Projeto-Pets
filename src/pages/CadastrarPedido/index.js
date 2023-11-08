@@ -2,23 +2,22 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
-import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
-export default function ModificarPedido({route}) {
+export default function CadastrarPedido({route}) {
     const [nomePet, setNomePet] = useState('')
     const [horarioPasseio, setHorarioPasseio] = useState('');
     const [telefone,setTelefone] = useState('');
     const [id, setId] = useState(0);
     const {username} = route.params;
-    const data  = {
+    const data  = [{
             id: id,
             nomePet: nomePet,
             horarioPasseio: horarioPasseio,
             telefone: telefone,
-        };
+        }];
         const navigation = useNavigation();
 
     const cadastrar = async () =>{
@@ -29,12 +28,11 @@ export default function ModificarPedido({route}) {
             try {
                 console.log(data);
                 const jsonValue = JSON.stringify(data);
-                await AsyncStorage.setItem('passeios' + username, jsonValue);
-                const response = await AsyncStorage.getItem('passeios' + username);
+                const response = await AsyncStorage.setItem('passeios' + username, jsonValue);
                 console.log(jsonValue);
                 if(response !== null) {
-                    Alert.alert('Cadastro efetuado com sucesso!')
-                    navigation.navigate('PetLove', {username})
+                    Alert.alert('Cadastro efetuado com sucesso!');
+                    navigation.navigate('PetLove', {username, id});
                 };
                 
                 

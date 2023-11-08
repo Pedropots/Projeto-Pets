@@ -1,26 +1,56 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, Button } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 
 export default function ModificarPedido({route}) {
-    const {username,itemId, itemNomePet,itemHorario, itemTelefone, toggle} = route.params;
+    const {username,itemId, itemNomePet,itemTelefone, toggle} = route.params;
+    const [date, setDate] = useState(new Date());
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
+    
+    const onChange = (event, selectedDate) => {
+      const currentDate = selectedDate;
+      setShow(false);
+      setDate(currentDate);
+    };
+    
+    const showMode = (currentMode) => {
+      setShow(true);
+      setMode(currentMode);
+    };
+    
+    const showDatepicker = () => {
+      showMode('date');
+    };
+    
+    const showTimepicker = () => {
+      showMode('time');
+    };      
+    
     const [nomePet, setNomePet] = useState(itemNomePet)
-    const [horarioPasseio, setHorarioPasseio] = useState(itemHorario);
     const [telefone,setTelefone] = useState(itemTelefone);
-    const [id, setId] = useState(itemId);
     const navigation = useNavigation();
     const untoggle = !toggle;
 
     const cadastrar = async () =>{
-        if(!nomePet || !telefone || !horarioPasseio){
+        if(!nomePet || !telefone){
             Alert.alert('Preencher campos', 'Existem campos que não foram preenchidos');
         }
         else{
             try {
+
+                
+                let dateTime = date.toLocaleString();
+                let dateTimeConverted = dateTime.split(' ')
+                let dia = dateTimeConverted[0];
+                let time = dateTimeConverted[1];
+                let timeSplited = time.split(':');
+                let hour = timeSplited[0];
+                let minutes = timeSplited[1];
 
                 const jsonArray = await AsyncStorage.getItem('passeios' + username);
                 const convertedArray = JSON.parse(jsonArray);
@@ -29,7 +59,8 @@ export default function ModificarPedido({route}) {
 
                     if(convertedArray[i].id === itemId){
                         convertedArray[i].nomePet = nomePet;
-                        convertedArray[i].horarioPasseio = horarioPasseio;
+                        convertedArray[i].data = dia;
+                        convertedArray[i].horarioPasseio = hour + ':' + minutes;
                         convertedArray[i].telefone = telefone;
                     }
 
@@ -52,32 +83,36 @@ export default function ModificarPedido({route}) {
     }
     return(
         <View style={styles.container}>
-            <Animatable.View animation={"fadeInLeft"} delay={500} style={styles.containerHeader}>
-                <Text style={styles.message}>Modificar Pedido</Text>
-            </Animatable.View>
-
-            <Animatable.View animation={'fadeInUp'} style={styles.containerForm}>
-                <ScrollView style={{marginTop: 15}} showsVerticalScrollIndicator={false}>
-
-                    <Text style={styles.title}>Nome do Pet</Text>
-                    <TextInput placeholder={itemNomePet} style={styles.input}  value={nomePet} onChangeText={setNomePet}></TextInput>
-
-                    <Text style={styles.title}>Horário do Passeio</Text>
-                    <TextInput placeholder={itemHorario} style={styles.input} onChangeText={setHorarioPasseio}></TextInput>
-
-                    <Text style={styles.title}>Telefone</Text>
-                    <TextInput placeholder={itemTelefone} style={styles.input} onChangeText={setTelefone}></TextInput>
-
-                    <Text style={styles.title}>Id</Text>
-                    <TextInput placeholder={itemId} style={styles.input} onChangeText={setId}></TextInput>
-
-                    <TouchableOpacity style={styles.button} onPress={() =>{cadastrar()}}>
-                        <Text style={styles.buttonText}>Modificar Pedido</Text>
+        <Animatable.View animation={"fadeInLeft"} delay={500} style={styles.containerHeader}>
+            <Text style={styles.message}> Modificar Pedido</Text>
+        </Animatable.View>
+        <Animatable.View animation={'fadeInUp'} style={styles.containerForm}>
+            <ScrollView style={{marginTop: 15}} showsVerticalScrollIndicator={false}>
+                <Text style={styles.title}>Nome do Pet</Text>
+                <TextInput placeholder={itemNomePet} style={styles.input}  value={nomePet} onChangeText={setNomePet}></TextInput>
+                <Text style={styles.title}>Telefone</Text>
+                <TextInput placeholder={itemTelefone} inputMode='tel' style={styles.input} onChangeText={setTelefone}></TextInput>
+                <TouchableOpacity style={styles.button} onPress={showDatepicker}>
+                        <Text style={styles.buttonText}>Escolha a data</Text>
                     </TouchableOpacity>
-                </ScrollView>
-
-            </Animatable.View>
-        </View>
+                    <TouchableOpacity style={styles.button} onPress={showTimepicker}>
+                        <Text style={styles.buttonText}>Escolha um horário</Text>
+                    </TouchableOpacity>
+                {show && (
+                    <DateTimePicker
+                    testID="dateTimePicker"
+                    value={date}
+                    mode={mode}
+                    is24Hour={true}
+                    onChange={onChange}
+                    />
+                    )}
+                <TouchableOpacity style={styles.button} onPress={() =>{cadastrar()}}>
+                    <Text style={styles.buttonText}>Cadastrar Pedido</Text>
+                </TouchableOpacity>
+            </ScrollView>
+        </Animatable.View>
+    </View>
     );
 }
 

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert 
 import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import nextId from "react-id-generator";
 
 
 
@@ -10,15 +11,10 @@ export default function CadastrarPedido({route}) {
     const [nomePet, setNomePet] = useState('')
     const [horarioPasseio, setHorarioPasseio] = useState('');
     const [telefone,setTelefone] = useState('');
-    const [id, setId] = useState(0);
-    const {username} = route.params;
-    const data  = [{
-            id: id,
-            nomePet: nomePet,
-            horarioPasseio: horarioPasseio,
-            telefone: telefone,
-        }];
-        const navigation = useNavigation();
+    const {username, toggle} = route.params;
+   
+    const untoggle = !toggle
+    const navigation = useNavigation();
 
     const cadastrar = async () =>{
         if(!nomePet || !telefone || !horarioPasseio){
@@ -26,13 +22,31 @@ export default function CadastrarPedido({route}) {
         }
         else{
             try {
-                console.log(data);
-                const jsonValue = JSON.stringify(data);
+                let id = nextId();
+                stringId = id.toString();
+                console.log(stringId);
+
+                const data  = {
+                id: stringId,
+                nomePet: nomePet,
+                horarioPasseio: horarioPasseio,
+                telefone: telefone,
+                };
+
+                const jsonArray = await AsyncStorage.getItem('passeios' + username);
+                const convertedArray = JSON.parse(jsonArray);
+                let array = [];
+                for(let i = 0; i < convertedArray.length; i++){
+                    array.push(convertedArray[i]);
+                }
+                array.push(data);
+                
+                const jsonValue = JSON.stringify(array);
                 const response = await AsyncStorage.setItem('passeios' + username, jsonValue);
                 console.log(jsonValue);
                 if(response !== null) {
                     Alert.alert('Cadastro efetuado com sucesso!');
-                    navigation.navigate('PetLove', {username, id});
+                    navigation.navigate('PetLove', {username, untoggle});
                 };
                 
                 
@@ -44,7 +58,7 @@ export default function CadastrarPedido({route}) {
     return(
         <View style={styles.container}>
             <Animatable.View animation={"fadeInLeft"} delay={500} style={styles.containerHeader}>
-                <Text style={styles.message}>Pedido</Text>
+                <Text style={styles.message}> Modificar Pedido</Text>
             </Animatable.View>
 
             <Animatable.View animation={'fadeInUp'} style={styles.containerForm}>
@@ -58,9 +72,6 @@ export default function CadastrarPedido({route}) {
 
                     <Text style={styles.title}>Telefone</Text>
                     <TextInput placeholder='Telefone' style={styles.input} onChangeText={setTelefone}></TextInput>
-
-                    <Text style={styles.title}>Id</Text>
-                    <TextInput placeholder='Telefone' style={styles.input} onChangeText={setId}></TextInput>
 
                     <TouchableOpacity style={styles.button} onPress={() =>{cadastrar()}}>
                         <Text style={styles.buttonText}>Cadastrar Pedido</Text>

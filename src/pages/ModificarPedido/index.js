@@ -2,43 +2,53 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
-import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
-export default function ModificarPedido() {
+export default function CadastrarPedido({route}) {
     const [nomePet, setNomePet] = useState('')
     const [horarioPasseio, setHorarioPasseio] = useState('');
     const [telefone,setTelefone] = useState('');
+    const [id, setId] = useState(0);
+    const {username, itemId} = route.params;
+        const navigation = useNavigation();
 
-    const data = {
-        nomePet: nomePet,
-        horarioPasseio:horarioPasseio,
-        telefone:telefone,
-    };
-    const navigation = useNavigation();
-
-    
-
-    `const cadastrar = async () =>{
+    const cadastrar = async () =>{
         if(!nomePet || !telefone || !horarioPasseio){
             Alert.alert('Preencher campos', 'Existem campos que não foram preenchidos');
         }
         else{
             try {
-                console.log(data);
-                const jsonValue = JSON.stringify(data);
-                await AsyncStorage.setItem(nomePet, jsonValue);
+
+                const jsonArray = await AsyncStorage.getItem('passeios' + username);
+                const convertedArray = JSON.parse(jsonArray);
+                let array = [];
+                for(let i = 0; i < convertedArray.length; i++){
+
+                    if(convertedArray[i].id === itemId){
+                        convertedArray[i].nomePet = nomePet;
+                        convertedArray[i].horarioPasseio = horarioPasseio;
+                        convertedArray[i].telefone = telefone;
+                    }
+
+                    array.push(convertedArray[i]);
+                }
+
+                const jsonValue = JSON.stringify(array);
+                const response = await AsyncStorage.setItem('passeios' + username, jsonValue);
                 console.log(jsonValue);
-                Alert.alert('Cadastro efetuado com sucesso!')
-                navigation.navigate('SignIn');
+                if(response !== null) {
+                    Alert.alert('Cadastro efetuado com sucesso!');
+                    navigation.navigate('PetLove', {username, id});
+                };
+                
+                
             } catch (error) {
-                console.error(e)
+                console.error(error);
             }
         }
-    }`
-
+    }
     return(
         <View style={styles.container}>
             <Animatable.View animation={"fadeInLeft"} delay={500} style={styles.containerHeader}>
@@ -48,7 +58,7 @@ export default function ModificarPedido() {
             <Animatable.View animation={'fadeInUp'} style={styles.containerForm}>
                 <ScrollView style={{marginTop: 15}} showsVerticalScrollIndicator={false}>
 
-                    <Text style={styles.title}>Username</Text>
+                    <Text style={styles.title}>Nome do Pet</Text>
                     <TextInput placeholder='Username' style={styles.input}  value={nomePet} onChangeText={setNomePet}></TextInput>
 
                     <Text style={styles.title}>Horário do Passeio</Text>
@@ -57,7 +67,10 @@ export default function ModificarPedido() {
                     <Text style={styles.title}>Telefone</Text>
                     <TextInput placeholder='Telefone' style={styles.input} onChangeText={setTelefone}></TextInput>
 
-                    <TouchableOpacity style={styles.button}>
+                    <Text style={styles.title}>Id</Text>
+                    <TextInput placeholder='Telefone' style={styles.input} onChangeText={setId}></TextInput>
+
+                    <TouchableOpacity style={styles.button} onPress={() =>{cadastrar()}}>
                         <Text style={styles.buttonText}>Modificar Pedido</Text>
                     </TouchableOpacity>
                 </ScrollView>

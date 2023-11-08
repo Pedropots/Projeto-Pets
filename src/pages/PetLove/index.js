@@ -9,7 +9,7 @@ export default function PetLove ({route}) {
 
     const navigation = useNavigation();
     const {username, id} = route.params;
-    const[info, setInfo] = useState([]); 
+    const[info, setInfo] = useState(null); 
 
      
     useEffect(()=>{
@@ -23,7 +23,6 @@ export default function PetLove ({route}) {
                     data = `${data}`;
                 }
                 setInfo(JSON.parse(data));
-                return info;
            } catch (error) {
                 console.log('Erro ao fazer download dos passeios');
            }
@@ -34,8 +33,8 @@ export default function PetLove ({route}) {
 
     }
 
-    const modificarPedido = (id) =>{
-        navigation.navigate('ModificarPedido');
+    const modificarPedido = (itemId, itemNomePet,itemHorario, itemTelefone) =>{
+        navigation.navigate('ModificarPedido', {username, itemId, itemNomePet, itemHorario, itemTelefone});
     }
 
 
@@ -64,7 +63,7 @@ export default function PetLove ({route}) {
                             <TouchableOpacity onPress={()=> deletar(item.id)}>
                                 <Text style={{color:'red'}}>Deletar</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() =>modificarPedido(item.id)}>
+                            <TouchableOpacity onPress={() =>modificarPedido(item.id, item.nomePet, item.horarioPasseio, item.telefone)}>
                                 <Text style={{color:'green'}}>Modificar</Text>
                             </TouchableOpacity>
                             </View>

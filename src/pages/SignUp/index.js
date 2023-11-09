@@ -55,10 +55,10 @@ export default function SignUp() {
                     <TextInput placeholder='Password' style={styles.input} secureTextEntry={true} value={senha} onChangeText={setSenha}></TextInput>
 
                     <Text style={styles.title}>E-mail</Text>
-                    <TextInput placeholder='E-mail' style={styles.input} value={email} onChangeText={setEmail}></TextInput>
+                    <TextInput placeholder='E-mail' inputMode = 'email' style={styles.input} value={email} onChangeText={setEmail}></TextInput>
 
                     <Text style={styles.title}>CPF</Text>
-                    <TextInput placeholder='CPF' style={styles.input} onChangeText={setCPF}></TextInput>
+                    <TextInput placeholder='CPF'  inputMode='numeric' style={styles.input} onChangeText={setCPF}></TextInput>
 
                     <Text style={styles.title}>Endereço</Text>
                     <TextInput placeholder='Endereço' style={styles.input}></TextInput>
@@ -139,4 +139,3 @@ const styles = StyleSheet.create({
     }
 
 })
-

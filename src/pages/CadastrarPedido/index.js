@@ -46,7 +46,7 @@ export default function CadastrarPedido({route}) {
         }
         else{
 
-            let dateTime = date.toLocaleString();
+                let dateTime = date.toLocaleString();
                 let dateTimeConverted = dateTime.split(' ')
                 let dia = dateTimeConverted[0];
                 let time = dateTimeConverted[1];
@@ -56,7 +56,6 @@ export default function CadastrarPedido({route}) {
             try {
                 let id = nextId();
                 stringId = id.toString();
-                console.log(stringId);
                 const data  = {
                 id: stringId,
                 dataInteira: date,
@@ -65,15 +64,14 @@ export default function CadastrarPedido({route}) {
                 horarioPasseio: hour + ':' + minutes,
                 telefone: telefone,
                 };
+
                 let array = [];
-                
                 const jsonArray = await AsyncStorage.getItem('passeios' + username);
-                if (jsonArray === null || jsonArray === undefined || jsonArray) {
+                if (jsonArray === null || jsonArray === undefined) {
                     array.push(data);
                 }else{
 
                     const convertedArray = JSON.parse(jsonArray);
-                    let array = [];
                     for(let i = 0; i < convertedArray.length; i++){
                         array.push(convertedArray[i]);
                     }
@@ -99,7 +97,7 @@ export default function CadastrarPedido({route}) {
             <Animatable.View animation={'fadeInUp'} style={styles.containerForm}>
                 <ScrollView style={{marginTop: 15}} showsVerticalScrollIndicator={false}>
                     <Text style={styles.title}>Nome do Pet</Text>
-                    <TextInput placeholder='Username' style={styles.input}  value={nomePet} onChangeText={setNomePet}></TextInput>
+                    <TextInput placeholder='Nome do Pet' style={styles.input}  value={nomePet} onChangeText={setNomePet}></TextInput>
                     <Text style={styles.title}>Telefone</Text>
                     <TextInput placeholder='Telefone' inputMode='tel' style={styles.input} onChangeText={setTelefone}></TextInput>
                     <TouchableOpacity style={styles.button} onPress={showDatepicker}>
@@ -179,4 +177,3 @@ const styles = StyleSheet.create({
     }
 
 })
-

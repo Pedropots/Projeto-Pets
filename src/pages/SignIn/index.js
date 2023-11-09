@@ -7,10 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function SignIn() {
     const [senha, setSenha] = useState('');
     const [username, setUsername] = useState('');
-    const [loggedIn, setLoggedIn] = useState({
-        isLogged: false,
-        username: ''
-    });
+    let toggle = true;
     const [CPF, setCPF] = useState('');
     
 
@@ -34,14 +31,14 @@ export default function SignIn() {
                 else if (data.senha === senha) {
                     setCPF(data.CPF);
                     setUsername(data.username);
-                    setLoggedIn({
+                    let loggedIn = {
                         isLogged: true,
                         username: username
-                    });
+                    };
                     const jsonValue = JSON.stringify(loggedIn);
                     await AsyncStorage.setItem('isLogged', jsonValue);
                     console.log(loggedIn);
-                    navigation.navigate('PetLove',{username,CPF});
+                    navigation.navigate('PetLove',{username,CPF,toggle});
                 }
                 else{
                     Alert.alert('Credenciais', 'Senha incorreta');

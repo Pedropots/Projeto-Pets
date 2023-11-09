@@ -7,7 +7,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 
 export default function ModificarPedido({route}) {
-    const {username,itemId, itemNomePet,itemTelefone, toggle} = route.params;
+    const {username,itemId, itemNomePet, itemDataInteira,itemTelefone, toggle} = route.params;
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
